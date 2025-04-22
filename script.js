@@ -1,4 +1,188 @@
 document.addEventListener("DOMContentLoaded", function () {
+	// Hamburger Menu & Overlay Functionality
+	const hamburgerMenu = document.getElementById("hamburgerMenu");
+	const menuOverlay = document.getElementById("menuOverlay");
+	const saveButtonOverlay = document.getElementById("saveButtonOverlay");
+	const loadButtonOverlay = document.getElementById("loadButtonOverlay");
+	const exportButtonOverlay = document.getElementById("exportButtonOverlay");
+
+	// Toggle menu when clicking hamburger icon
+	hamburgerMenu.addEventListener("click", () => {
+		hamburgerMenu.classList.toggle("active");
+		menuOverlay.classList.toggle("active");
+	});
+
+	// Close menu when clicking outside
+	menuOverlay.addEventListener("click", (e) => {
+		if (e.target === menuOverlay) {
+			hamburgerMenu.classList.remove("active");
+			menuOverlay.classList.remove("active");
+		}
+	});
+
+	// Connect overlay buttons to existing functionality
+	saveButtonOverlay.addEventListener("click", () => {
+		saveData();
+		hamburgerMenu.classList.remove("active");
+		menuOverlay.classList.remove("active");
+	});
+
+	loadButtonOverlay.addEventListener("click", () => {
+		loadData();
+		hamburgerMenu.classList.remove("active");
+		menuOverlay.classList.remove("active");
+	});
+
+	exportButtonOverlay.addEventListener("click", () => {
+		exportData();
+		hamburgerMenu.classList.remove("active");
+		menuOverlay.classList.remove("active");
+	});
+
+	// Extract save, load, and export functionality into reusable functions
+	function saveData() {
+		const competitionData = {
+			initialTeams: getAllInitialTeams(),
+			qualifiedTeams: getAllQualifiedTeams(),
+			semiFinalists: getAllSemiFinalists(),
+			round1: getRoundData("round1"),
+			round2: getRoundData("round2"),
+			quarterFinals: getRoundData("quarterFinals"),
+			semiFinals: getRoundData("semiFinals"),
+			state: {
+				currentRound: currentRound,
+				currentMatchIndex: currentMatchIndex,
+				quarterFinalsMatchIndex: quarterFinalsMatchIndex,
+				semiFinalsMatchIndex: semiFinalsMatchIndex,
+			},
+		};
+		localStorage.setItem("mootCourtData", JSON.stringify(competitionData));
+		alert("Data saved successfully!");
+	}
+
+	function loadData() {
+		const input = document.createElement("input");
+		input.type = "file";
+		input.accept = ".json";
+
+		input.onchange = (event) => {
+			const file = event.target.files[0];
+			const reader = new FileReader();
+
+			reader.onload = (e) => {
+				try {
+					const data = JSON.parse(e.target.result);
+
+					// Reconstruct pairings arrays first
+					loadCompetitionData(data);
+
+					// Load the data into your application
+					if (data.initialTeams) loadInitialTeams(data.initialTeams);
+					if (data.qualifiedTeams) loadQualifiedTeams(data.qualifiedTeams);
+					if (data.semiFinalists) loadSemiFinalists(data.semiFinalists);
+					if (data.round1) loadRoundData("round1", data.round1);
+					if (data.round2) loadRoundData("round2", data.round2);
+					if (data.quarterFinals)
+						loadRoundData("quarterFinals", data.quarterFinals);
+					if (data.semiFinals) loadRoundData("semiFinals", data.semiFinals);
+
+					// Restore application state
+					if (data.state) {
+						currentRound = data.state.currentRound || 1;
+						currentMatchIndex = data.state.currentMatchIndex || 0;
+						quarterFinalsMatchIndex = data.state.quarterFinalsMatchIndex || 0;
+						semiFinalsMatchIndex = data.state.semiFinalsMatchIndex || 0;
+
+						// Always disable the Next button for Quarter Finals and Semi Finals stages
+						if (quarterFinalsMatchIndex > 0 || semiFinalsMatchIndex > 0) {
+							nextButton.disabled = true;
+						} else if (
+							currentRound > 1 ||
+							currentMatchIndex === round1Pairings.length
+						) {
+							nextButton.disabled = currentMatchIndex === round2Pairings.length;
+						} else {
+							nextButton.disabled = false;
+						}
+
+						// Update Quarter Finals button
+						if (quarterFinalsMatchIndex > 0) {
+							generateQuarterFinalsButton.textContent =
+								"Next Quarter Final Match";
+							generateQuarterFinalsButton.disabled =
+								quarterFinalsMatchIndex >= quarterFinalsPairings.length;
+						} else {
+							// Check if all qualified teams are filled
+							const allQualifiedFilled = Array.from(qualifiedInputs).every(
+								(input) => input.value.trim() !== ""
+							);
+							const validQualified = validateUniqueTeams();
+							generateQuarterFinalsButton.disabled =
+								!allQualifiedFilled || !validQualified;
+						}
+
+						// Update Semi Finals button
+						if (semiFinalsMatchIndex > 0) {
+							generateSemiFinalsButton.textContent = "Next Semi Final";
+							generateSemiFinalsButton.disabled =
+								semiFinalsMatchIndex >= semiFinalsPairings.length;
+						} else {
+							// Check if all semi-finalists are filled
+							const allSemiFinalistsFilled = Array.from(
+								semiFinalistInputs
+							).every((input) => input.value.trim() !== "");
+							const validSemiFinalists = validateSemiFinalists();
+							generateSemiFinalsButton.disabled =
+								!allSemiFinalistsFilled ||
+								!validSemiFinalists ||
+								quarterFinalsMatchIndex < quarterFinalsPairings.length;
+						}
+					}
+
+					alert("Data loaded successfully!");
+				} catch (error) {
+					alert("Error loading file: " + error.message);
+				}
+			};
+
+			reader.readAsText(file);
+		};
+
+		input.click();
+	}
+
+	function exportData() {
+		const competitionData = {
+			initialTeams: getAllInitialTeams(),
+			qualifiedTeams: getAllQualifiedTeams(),
+			semiFinalists: getAllSemiFinalists(),
+			round1: getRoundData("round1"),
+			round2: getRoundData("round2"),
+			quarterFinals: getRoundData("quarterFinals"),
+			semiFinals: getRoundData("semiFinals"),
+			state: {
+				currentRound: currentRound,
+				currentMatchIndex: currentMatchIndex,
+				quarterFinalsMatchIndex: quarterFinalsMatchIndex,
+				semiFinalsMatchIndex: semiFinalsMatchIndex,
+			},
+		};
+		const dataStr = JSON.stringify(competitionData, null, 2);
+		const dataUri =
+			"data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+		const exportFileDefaultName = "moot-court-data.json";
+
+		const linkElement = document.createElement("a");
+		linkElement.setAttribute("href", dataUri);
+		linkElement.setAttribute("download", exportFileDefaultName);
+		linkElement.click();
+	}
+
+	// Update the existing save/load/export button event listeners to use the new functions
+	document.getElementById("saveButton").addEventListener("click", saveData);
+	document.getElementById("exportButton").addEventListener("click", exportData);
+	document.getElementById("loadButton").addEventListener("click", loadData);
+
 	const nextButton = document.getElementById("nextButton");
 	const generateQuarterFinalsButton = document.getElementById(
 		"generateQuarterFinals"
@@ -616,145 +800,13 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	// Save functionality
-	document.getElementById("saveButton").addEventListener("click", () => {
-		const competitionData = {
-			initialTeams: getAllInitialTeams(),
-			qualifiedTeams: getAllQualifiedTeams(),
-			semiFinalists: getAllSemiFinalists(),
-			round1: getRoundData("round1"),
-			round2: getRoundData("round2"),
-			quarterFinals: getRoundData("quarterFinals"),
-			semiFinals: getRoundData("semiFinals"),
-			state: {
-				currentRound: currentRound,
-				currentMatchIndex: currentMatchIndex,
-				quarterFinalsMatchIndex: quarterFinalsMatchIndex,
-				semiFinalsMatchIndex: semiFinalsMatchIndex,
-			},
-		};
-		localStorage.setItem("mootCourtData", JSON.stringify(competitionData));
-		alert("Data saved successfully!");
-	});
+	document.getElementById("saveButton").addEventListener("click", saveData);
 
 	// Export functionality
-	document.getElementById("exportButton").addEventListener("click", () => {
-		const competitionData = {
-			initialTeams: getAllInitialTeams(),
-			qualifiedTeams: getAllQualifiedTeams(),
-			semiFinalists: getAllSemiFinalists(),
-			round1: getRoundData("round1"),
-			round2: getRoundData("round2"),
-			quarterFinals: getRoundData("quarterFinals"),
-			semiFinals: getRoundData("semiFinals"),
-			state: {
-				currentRound: currentRound,
-				currentMatchIndex: currentMatchIndex,
-				quarterFinalsMatchIndex: quarterFinalsMatchIndex,
-				semiFinalsMatchIndex: semiFinalsMatchIndex,
-			},
-		};
-		const dataStr = JSON.stringify(competitionData, null, 2);
-		const dataUri =
-			"data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
-		const exportFileDefaultName = "moot-court-data.json";
-
-		const linkElement = document.createElement("a");
-		linkElement.setAttribute("href", dataUri);
-		linkElement.setAttribute("download", exportFileDefaultName);
-		linkElement.click();
-	});
+	document.getElementById("exportButton").addEventListener("click", exportData);
 
 	// Load functionality
-	document.getElementById("loadButton").addEventListener("click", () => {
-		const input = document.createElement("input");
-		input.type = "file";
-		input.accept = ".json";
-
-		input.onchange = (event) => {
-			const file = event.target.files[0];
-			const reader = new FileReader();
-
-			reader.onload = (e) => {
-				try {
-					const data = JSON.parse(e.target.result);
-
-					// Reconstruct pairings arrays first
-					loadCompetitionData(data);
-
-					// Load the data into your application
-					if (data.initialTeams) loadInitialTeams(data.initialTeams);
-					if (data.qualifiedTeams) loadQualifiedTeams(data.qualifiedTeams);
-					if (data.semiFinalists) loadSemiFinalists(data.semiFinalists);
-					if (data.round1) loadRoundData("round1", data.round1);
-					if (data.round2) loadRoundData("round2", data.round2);
-					if (data.quarterFinals)
-						loadRoundData("quarterFinals", data.quarterFinals);
-					if (data.semiFinals) loadRoundData("semiFinals", data.semiFinals);
-
-					// Restore application state
-					if (data.state) {
-						currentRound = data.state.currentRound || 1;
-						currentMatchIndex = data.state.currentMatchIndex || 0;
-						quarterFinalsMatchIndex = data.state.quarterFinalsMatchIndex || 0;
-						semiFinalsMatchIndex = data.state.semiFinalsMatchIndex || 0;
-
-						// Always disable the Next button for Quarter Finals and Semi Finals stages
-						if (quarterFinalsMatchIndex > 0 || semiFinalsMatchIndex > 0) {
-							nextButton.disabled = true;
-						} else if (
-							currentRound > 1 ||
-							currentMatchIndex === round1Pairings.length
-						) {
-							nextButton.disabled = currentMatchIndex === round2Pairings.length;
-						} else {
-							nextButton.disabled = false;
-						}
-
-						// Update Quarter Finals button
-						if (quarterFinalsMatchIndex > 0) {
-							generateQuarterFinalsButton.textContent =
-								"Next Quarter Final Match";
-							generateQuarterFinalsButton.disabled =
-								quarterFinalsMatchIndex >= quarterFinalsPairings.length;
-						} else {
-							// Check if all qualified teams are filled
-							const allQualifiedFilled = Array.from(qualifiedInputs).every(
-								(input) => input.value.trim() !== ""
-							);
-							const validQualified = validateUniqueTeams();
-							generateQuarterFinalsButton.disabled =
-								!allQualifiedFilled || !validQualified;
-						}
-
-						// Update Semi Finals button
-						if (semiFinalsMatchIndex > 0) {
-							generateSemiFinalsButton.textContent = "Next Semi Final";
-							generateSemiFinalsButton.disabled =
-								semiFinalsMatchIndex >= semiFinalsPairings.length;
-						} else {
-							// Check if all semi-finalists are filled
-							const allSemiFinalistsFilled = Array.from(
-								semiFinalistInputs
-							).every((input) => input.value.trim() !== "");
-							const validSemiFinalists = validateSemiFinalists();
-							generateSemiFinalsButton.disabled =
-								!allSemiFinalistsFilled ||
-								!validSemiFinalists ||
-								quarterFinalsMatchIndex < quarterFinalsPairings.length;
-						}
-					}
-
-					alert("Data loaded successfully!");
-				} catch (error) {
-					alert("Error loading file: " + error.message);
-				}
-			};
-
-			reader.readAsText(file);
-		};
-
-		input.click();
-	});
+	document.getElementById("loadButton").addEventListener("click", loadData);
 
 	// Helper functions
 	function getAllInitialTeams() {

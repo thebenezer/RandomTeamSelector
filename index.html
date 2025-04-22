@@ -9,6 +9,45 @@
 </head>
 
 <body>
+    <!-- Hamburger Menu Button -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div id="menuOverlay" class="menu-overlay">
+        <div class="menu-grid">
+            <!-- Left Column - Description -->
+            <div class="menu-column left-column">
+                <div class="menu-description">
+                    <p>MOOT Court Competition</p>
+                    <p>A tool for organizing and tracking competition rounds.</p>
+                    <p>Created April 23, 2025</p>
+                </div>
+
+                <div class="menu-explanation">
+                    <p>How it works:</p>
+                    <p>This app creates random pairings for teams in your competition. Teams are matched for preliminary
+                        rounds, with winners proceeding to elimination rounds. The system ensures fair matchups by
+                        switching petitioner/respondent roles and preventing teams from facing each other twice.</p>
+                </div>
+
+                <div class="menu-credits">
+                    <p>made by thebenezer</p>
+                </div>
+            </div>
+
+            <!-- Right Column - Menu Items -->
+            <div class="menu-column right-column">
+                <div id="saveButtonOverlay" class="menu-item">SAVE</div>
+                <div id="loadButtonOverlay" class="menu-item">LOAD</div>
+                <div id="exportButtonOverlay" class="menu-item">EXPORT</div>
+            </div>
+        </div>
+    </div>
+
     <div class="layout">
         <aside class="teams-sidebar">
             <div id="initialTeams" class="initial-teams"></div>
