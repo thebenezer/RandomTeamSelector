@@ -96,6 +96,30 @@ body {
 
 header {
 	margin-bottom: 3rem;
+	position: relative;
+}
+
+.top-buttons {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	display: flex;
+	gap: 0.5rem;
+}
+
+.top-buttons button {
+	padding: 0.5rem 1rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	background-color: #fff;
+	cursor: pointer;
+	font-size: 0.9rem;
+	transition: all 0.2s ease;
+}
+
+.top-buttons button:hover {
+	background-color: #f0f0f0;
+	border-color: #999;
 }
 
 h1 {
