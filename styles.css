@@ -56,8 +56,8 @@ body {
 		(100vh - 3rem - (15 * 0.5rem)) / 16
 	); /* Account for gaps between blocks */
 	min-height: 0;
-	background-color: white;
-	color: black;
+	background-color: black;
+	color: white;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -68,12 +68,22 @@ body {
 }
 
 .team-block.selected {
-	background-color: black;
-	color: white;
+	background-color: white;
+	color: black;
 }
 
 .team-block.animated {
-	opacity: 0.3;
+	opacity: 0.2;
+}
+
+.team-block.greyed-out {
+	opacity: 0.2;
+}
+
+.team-block.qualified {
+	opacity: 1;
+	background-color: black;
+	color: white;
 }
 
 .main-content {
@@ -144,7 +154,7 @@ p {
 
 .rounds-container {
 	display: flex;
-	gap: 3rem;
+	gap: 2rem;
 	width: 560px;
 	min-width: 560px;
 	overflow: visible;
@@ -158,9 +168,9 @@ p {
 	padding-top: 1.5rem;
 }
 
-/* Remove duplicate rule */
+/* Remove padding-left from second round to maintain consistent spacing */
 .round + .round {
-	padding-left: 2rem;
+	padding-left: 0;
 }
 
 h2 {
@@ -366,6 +376,27 @@ h2 {
 	min-width: 280px;
 }
 
+.round-transition {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scale(0.9);
+	background-color: black;
+	color: white;
+	padding: 1.5rem 2rem;
+	border-radius: 4px;
+	font-size: 1.25rem;
+	font-weight: 500;
+	opacity: 0;
+	transition: all 0.3s ease;
+	z-index: 2000;
+}
+
+.round-transition.show {
+	opacity: 1;
+	transform: translate(-50%, -50%) scale(1);
+}
+
 @media (max-width: 768px) {
 	.layout {
 		grid-template-columns: 1fr;
@@ -430,4 +461,39 @@ h2 {
 		padding-top: 2rem;
 		margin-top: 2rem;
 	}
+}
+
+.team-input,
+.semi-finalist-input {
+	background-color: white;
+}
+
+.team-input.error,
+.semi-finalist-input.error {
+	border-color: #ff4444;
+	background-color: #fff0f0;
+}
+
+.error-message {
+	display: none;
+	color: #ff4444;
+	font-size: 0.8em;
+	margin-top: 4px;
+}
+
+.team-input.error + .error-message,
+.semi-finalist-input.error + .error-message {
+	display: block;
+}
+
+/* Style the datalist dropdown */
+input::-webkit-calendar-picker-indicator {
+	cursor: pointer;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+	-webkit-box-shadow: 0 0 0px 1000px white inset;
+	box-shadow: 0 0 0px 1000px white inset;
 }
