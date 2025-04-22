@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOOT Court Competition</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="teams-sidebar">
+            <div id="initialTeams" class="initial-teams"></div>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <h1>MOOT Court Competition</h1>
+                <p>Preliminary Rounds & Quarter Finals</p>
+            </header>
+
+            <div class="competition-rounds">
+                <div id="roundsContainer" class="rounds-container">
+                    <div class="round">
+                        <h2>Round 1</h2>
+                        <div id="round1" class="pairings"></div>
+                    </div>
+                    <div class="round">
+                        <h2>Round 2</h2>
+                        <div id="round2" class="pairings"></div>
+                    </div>
+                </div>
+
+                <div class="qualified-teams">
+                    <div class="round">
+                        <h2>Qualified Teams</h2>
+                        <div id="qualifiedTeams" class="qualified-inputs">
+                            <div class="input-group">
+                                <label>1.</label>
+                                <input type="text" class="team-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>2.</label>
+                                <input type="text" class="team-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>3.</label>
+                                <input type="text" class="team-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>4.</label>
+                                <input type="text" class="team-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>5.</label>
+                                <input type="text" class="team-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>6.</label>
+                                <input type="text" class="team-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>7.</label>
+                                <input type="text" class="team-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>8.</label>
+                                <input type="text" class="team-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quarter-finals">
+                    <div class="round">
+                        <h2>Quarter Finals</h2>
+                        <div id="quarterFinals" class="pairings"></div>
+                    </div>
+                </div>
+
+                <div class="semi-finalists">
+                    <div class="round">
+                        <h2>Semi Finalists</h2>
+                        <div id="semiFinalistsInputs" class="qualified-inputs">
+                            <div class="input-group">
+                                <label>1.</label>
+                                <input type="text" class="semi-finalist-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>2.</label>
+                                <input type="text" class="semi-finalist-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>3.</label>
+                                <input type="text" class="semi-finalist-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                            <div class="input-group">
+                                <label>4.</label>
+                                <input type="text" class="semi-finalist-input" placeholder="Enter team name">
+                                <span class="error-message">Duplicate team name</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="semi-finals">
+                    <div class="round">
+                        <h2>Semi Finals</h2>
+                        <div id="semiFinals" class="pairings"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="buttons-container">
+            <button id="nextButton" class="button button-next">Next Match</button>
+            <button id="generateQuarterFinals" class="button" disabled>Generate Quarter Finals</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
